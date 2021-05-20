@@ -65,15 +65,14 @@ namespace Backoffice.Controllers
             [FromServices] DataContext context,
             int id,
             [FromBody] Product model)
-        {
+        {          
+            // Verifica se os dados são válidos
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             // Verifica se o ID informado é o mesmo do modelo
             if (id != model.Id)
                 return NotFound(new { message = "Produto não encontrada" });
-
-            // Verifica se os dados são válidos
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             try
             {
