@@ -57,5 +57,35 @@ namespace Backoffice.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        [Authorize(Roles = "employee")]
+        public async Task<ActionResult<Product>> Put(
+            [FromServices] DataContext context,
+            int id,
+            [FromBody] Product model)
+        {
+
+            // Verifica se o ID informado é o mesmo do modelo
+            if (id != model.Id)
+                return NotFound(new { message = "Produto não encontrada" });
+
+            // Verifica se os dados são válidos
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                context.Entry<Product>(model).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return model;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest(new { message = "Não foi possível atualizar o produto" });
+
+            }
+        }
     }
 }
